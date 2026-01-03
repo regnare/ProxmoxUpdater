@@ -452,8 +452,10 @@ CONTAINER_BACKUP () {
       fi
     fi
     if [[ "$BACKUP" == true ]]; then
+      # Use BACKUP_MODE from config, default to 'stop' if not set
+      MODE=${BACKUP_MODE:-stop}
       echo -e "💾${OR:-} Create a backup for LXC (this will take some time - please wait)${CL:-}"
-      vzdump "$CONTAINER" --mode stop --notes-template "{{guestname}} - Ultimate-Updater" --storage "$(pvesm status -content backup | grep -m 1 -v ^Name | cut -d ' ' -f1)" --compress zstd
+      vzdump "$CONTAINER" --mode "$MODE" --notes-template "{{guestname}} - Ultimate-Updater" --storage "$(pvesm status -content backup | grep -m 1 -v ^Name | cut -d ' ' -f1)" --compress zstd
       echo -e "✅${GN:-} Backup created${CL:-}\n"
       if [[ $BACKUP_RESET == true ]]; then
         BACKUP=$(awk -F'"' '/^BACKUP=/ {print $2}' "$CONFIG_FILE")
@@ -480,8 +482,10 @@ VM_BACKUP () {
       fi
     fi
     if [[ "$BACKUP" == true ]]; then
+      # Use BACKUP_MODE from config, default to 'stop' if not set
+      MODE=${BACKUP_MODE:-stop}
       echo -e "💾${OR:-} Create a backup for the VM (this will take some time - please wait)${CL:-}"
-      vzdump "$VM" --mode stop --storage "$(pvesm status -content backup | grep -m 1 -v ^Name | cut -d ' ' -f1)" --compress zstd
+      vzdump "$VM" --mode "$MODE" --storage "$(pvesm status -content backup | grep -m 1 -v ^Name | cut -d ' ' -f1)" --compress zstd
       echo -e "✅${GN:-} Backup created${CL:-}"
     fi
   else
